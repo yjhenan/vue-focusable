@@ -5,19 +5,21 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-import VueFocus from "./lib/focus.directive";
+// import VueFocus from "./lib/focus.directive";
 
-Vue.use(VueFocus);
+// Vue.use(VueFocus);
 
-import FocusElement,{FocusOptions} from "./focus/focus"
+import FocusElement,{SpatialNavigationOptions} from "./focus/focus"
 import { NavigationServiceDirection } from './focus/navigation.service'
 Vue.use(FocusElement, {
   tag: "div",
-  event(el) {
+  setupKeyBoardEvents(el) {
     document.addEventListener("keydown", (e: KeyboardEvent) => {
       // 查找
       const keyCode = e.which ? e.which: e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
       if (el) {
+        console.log(keyCode);
+        
         switch (keyCode) {
           case 38:
             el.spatialNavigationAction(NavigationServiceDirection.Up)
@@ -38,7 +40,7 @@ Vue.use(FocusElement, {
       }
     });
   }
-}as FocusOptions)
+}as SpatialNavigationOptions)
 
 new Vue({
   router,

@@ -1,4 +1,4 @@
-import { FocusElement } from "./focus.directive";
+import { FocusElement } from "./FocusElement";
 
 export enum NavigationServiceDirection {
   Up = "up",
@@ -30,30 +30,8 @@ export class NavigationService {
         }
       }
     }
-
-    this.setupKeyBoardEvents();
     this.setupMouseEvents();
   }
-
-  setupKeyBoardEvents():void {
-    document.addEventListener("keydown", (e: KeyboardEvent) => {
-      // find key code
-      const keyCode = e.which ? e.which: e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
-
-      // find key name
-      const keyName = this.keyCodes[Number(keyCode)];
-
-      // no matching key found
-      if (!keyName) return false;
-
-      // spatial navigation is blocked
-      if (this.blockAllSpatialNavigation) return false;
-
-      // action spatial navigation
-      this.spatialNavigationAction(<NavigationServiceDirection>keyName);
-    });
-  }
-
   setupMouseEvents():void {
     // enable mouseover event
     document.addEventListener("mouseover", (e: MouseEvent) => {
@@ -135,16 +113,22 @@ export class NavigationService {
     }
   }
 
-  // bind focusable component
+  /**
+   * 从集合中添加对应的组件
+   * @param focusElement 所添加组件
+   */
   registerFocusElement(focusElement: FocusElement) :void{
     this.focusAbleElements.push(focusElement);
-    // set initial focus if there is no active focus and current element is default
+    // 如果没有活动焦点且当前元素为默认值，则设置初始焦点
     if (focusElement.isDefault && !this.getFocusElementInFocus()) {
       focusElement.focus();
     }
   }
 
-  // unbind focusable component
+  /**
+   * 从集合中删除对应的组件
+   * @param focusElement 所要删除组件
+   */
   deRegisterFocusElement(focusElement: FocusElement):void {
     const index = this.focusAbleElements.indexOf(focusElement);
     if (index > -1) {
@@ -153,28 +137,40 @@ export class NavigationService {
     }
   }
 
-  // get current component in focus
+  /**
+   * 获取当前具有焦点的组件
+   * @returns 当前焦点组件
+   */
   getFocusElementInFocus(): FocusElement | undefined {
     for (const el of this.focusAbleElements) {
       if (el.isFocus) return el;
     }
   }
 
-  // find focusable component by id
+  /**
+   * 根据 id 获取对应的组件
+   * @param id 组件 id
+   * @returns id 所对应的组件
+   */
   getFocusElementById(id: string) : FocusElement | undefined{
     for (const el of this.focusAbleElements) {
       if (el.id === id) return el;
     }
   }
 
-  // find component that should be focussed by default
+  /**
+   * 获取默认的组件
+   * @returns 默认组件
+   */
   getFocusElementIsDefault() : FocusElement | undefined{
     for (const el of this.focusAbleElements) {
       if (el.isDefault) return el;
     }
   }
 
-  // blurr all focusable components
+  /**
+   * 清楚所有组件的焦点状态
+   */
   blurAllFocusElements() : void{
     for (const el of this.focusAbleElements) {
       if (el.isFocus) el.blur();

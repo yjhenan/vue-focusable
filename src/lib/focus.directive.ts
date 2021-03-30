@@ -264,7 +264,7 @@ export class FocusElement {
   }
 
   private doFocusElement(id: string): void {
-    let el = navigationService.getFocusElementById(id);
+    const el = navigationService.getFocusElementById(id);
     if (el) el.focus();
   }
 }
@@ -288,7 +288,7 @@ export default {
     Vue.directive("focus", {
       // directive lifecycle
       bind: (el: any, binding: any, vnode: VNode) => {
-        let focusElement = new FocusElement(vnode);
+        const focusElement = new FocusElement(vnode);
         navigationService.registerFocusElement(focusElement);
 
         // set this element in focus if no element has focus and this is marked default
@@ -298,7 +298,7 @@ export default {
       },
       unbind: (el: any, binding: any, vnode: VNode) => {
         if (vnode.elm) {
-          let focusElement = navigationService.getFocusElementById((<HTMLScriptElement>vnode.elm).id);
+          const focusElement = navigationService.getFocusElementById((<HTMLScriptElement>vnode.elm).id);
           if (focusElement) navigationService.deRegisterFocusElement(focusElement);
         }
       }

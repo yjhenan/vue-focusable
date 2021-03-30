@@ -5,13 +5,11 @@ import template from "./home.vue";
 
 import { navigationService } from "../../lib/focus.directive";
 import FocusElement from "../../components/focus-element";
-import focus from "../../focus/focus";
 
 @Component({
   mixins: [template],
   components: {
-    FocusElement,
-    focus
+    FocusElement
   }
 })
 export default class Home extends Vue {

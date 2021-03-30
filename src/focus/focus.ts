@@ -1,6 +1,7 @@
-import Vue, { Component, ComponentOptions, FunctionalComponentOptions, VueConstructor, } from "vue"
+import Vue, { VueConstructor, } from "vue"
+import { NormalizedScopedSlot } from "vue/types/vnode";
 
-import { FocusElement } from "./focus.directive";
+import { FocusElement } from "./FocusElement";
 import { NavigationService } from "./navigation.service";
 
 const keyCodes = {
@@ -10,26 +11,26 @@ const keyCodes = {
     "right": 39,
     "enter": 13
 }
-const navigationService = new NavigationService(keyCodes);
+export const navigationService = new NavigationService(keyCodes);
 
 const ElementName = "Focus-" + Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 10);
-let keyCount = 0;
 
 // type NavigationServiceDirection = "Up" | "Down" | "Left" | "Right" | "Enter"
 
 
-export type FocusOptions = {
+export type SpatialNavigationOptions = {
     tag: string;
-    event: (eventType: NavigationService) => void;
+    setupKeyBoardEvents: (eventType: NavigationService) => void;
 }
 
 export default {
-    install(Vue: VueConstructor<Vue>, options: FocusOptions) {
-        options.event(navigationService);
+    install(Vue: VueConstructor<Vue>, options: SpatialNavigationOptions): void {
+        options.setupKeyBoardEvents(navigationService);
         Vue.component('Focus', {
             data() {
                 return {
                     name: ElementName,
+                    focusElement: null
                 }
             },
             // props: {
@@ -37,25 +38,30 @@ export default {
             //         default:keyCount++,
             //     }
             // },
-            render(createElement, hack) {
-             
-                return createElement(options.tag, {}, this.$vnode.componentOptions?.children);
+            render(createElement) {
+                
+                // (this.$vnode.data?.scopedSlots?.default as NormalizedScopedSlot )({
+                //     isDefault: false,
+                //     isFocus: false
+                // })
+                return createElement(options.tag, [
+                    (this.$scopedSlots.default as NormalizedScopedSlot)({
+                        isDefault: this.$data.focusElement?.isDefault,
+                        isFocus: this.$data.focusElement?.isFocus
+                    })]);
             },
             mounted() {
-                const focusElement = new FocusElement(this.$vnode)
-                console.log(this);
-                
-                navigationService.registerFocusElement(focusElement);
-                // 设置默认
-                if (focusElement.isDefault && !navigationService.getFocusElementInFocus()) {
-                    focusElement.focus();
-                }
+                this.$data.focusElement = new FocusElement(this.$vnode)
+                // console.log(this);
+
+                navigationService.registerFocusElement(this.$data.focusElement);
             },
             destroyed() {
-                // if (this.id) {
-                //     let focusElement = navigationService.getFocusElementById(String(this.id));
-                //     if (focusElement) navigationService.deRegisterFocusElement(focusElement);
-                //   }
+                if (this.$data.focusElement.id) {
+                    const focusElement = navigationService.getFocusElementById(this.$data.focusElement.id);
+                    if (focusElement) navigationService.deRegisterFocusElement(focusElement);
+                    this.$data.focusElement = null;
+                }
             }
         })
     }

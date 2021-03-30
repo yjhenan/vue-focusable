@@ -2,26 +2,26 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
-    <focus id="f1">
-      <div>1111</div>
-      <focus data-attr="a1">
-        <div>
-          <focus @open="open" @open2="open">
-            <div>3333</div>
-          </focus>
-        </div>
-        <div>2222</div>
-        <focus>
-          <focus v="11">
-            <div>3333</div>
-          </focus>
+    <div class="df fw">
+        <focus v-for="i in 5" :key="i" class="item blueviolet">{{i}}</focus>
+    </div>
+    <focus id="f1" class="df" default>
+      <!-- <template>
+        <div :style="{'color':scope.isFocus?'red':'#333'}">1111111{{scope}}</div>
+      </template> -->
           <focus>
-            <div>3333</div>
+              <focus v-for="i in 5" :key="i" class="item red">{{i}}</focus>
           </focus>
-        </focus>
-        <div>2222</div>
-      </focus>
-      <div>1111</div>
+           <focus class="df dfc">
+               <div>
+               <focus class="df fw">
+                   <focus v-for="i in 10" :key="i" class="item blue">{{i}}</focus>
+               </focus>
+               </div>
+               <focus class="df fw">
+                   <focus v-for="i in 10" :key="i" class="item yellow">{{i}}</focus>
+               </focus>
+           </focus>
     </focus>
   </div>
 </template>
@@ -37,9 +37,41 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
   },
 })
 export default class Home extends Vue {
-  open(data: any):void{
+  open(data: unknown): void {
     console.log(data);
-    
   }
 }
 </script>
+<style scoped>
+.df {
+  display: flex;
+}
+.dfc {
+  flex-direction: column;
+}
+.fw{
+    flex-wrap: wrap;
+}
+.item {
+  margin: 10px;
+  height: 100px;
+  width: 100px;
+}
+.red {
+  background-color: red;
+}
+.blue{
+    background-color: blue;
+}
+.yellow{
+    background-color: yellow;
+}
+.blueviolet{
+    background-color: blueviolet;
+}
+.focus{
+    box-sizing: border-box;
+    opacity: .5;
+    border: 1px dashed mediumvioletred;
+}
+</style>
