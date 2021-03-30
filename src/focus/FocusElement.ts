@@ -167,7 +167,7 @@ export class FocusElement {
     /**
      * 将焦点从此元素移到 左边
      */
-    left(): void {
+    left(node = this._node): void {
         // 检查是否应该自动找到下一个可聚焦元素
         if (this._left === FocusElement.AutoFocus) {
             this.defaultFocusPrevious();
@@ -175,19 +175,30 @@ export class FocusElement {
         } else if (this._left) {
             this.doFocusElement(this._left);
         } else {
-            const parentElement = this._node?.$parent;
+            const parentElement = node?.$parent;
             // 如果没有父元素，或者父元素不是焦点元素
-            if (!parentElement) return;
-            const focusChildren = parentElement.$children.filter(item => item.$data.name === this._node?.$data.name);
+            if (!parentElement || node?.$data.name !== this._node?.$data.name) return;
+            const focusChildren = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
             if (focusChildren.length > 1) {
-                const index = focusChildren.findIndex(item => item == this._node);
+                const index = focusChildren.findIndex(item => item == node);
                 if (index <= 0) {
-                    return;
+                    console.log("已经是第一个了！");
+                    this.left(parentElement);
                 } else {
-                    focusChildren[index - 1].$data.focusElement.focus();
+                    if (this.isParentFocusElement(focusChildren[index - 1])) {
+                        const element = this.getParentElementLastChildren(focusChildren[index - 1]);
+                        if (this.isParentFocusElement(element)) {
+                            this.left(focusChildren[index - 1])
+                        } else {
+                            element.$data.focusElement.focus();
+                        }
+                    } else {
+                        focusChildren[index - 1].$data.focusElement.focus();
+                    }
                 }
             }
         }
+        this.triggerListener("left");
     }
 
     // move focus to the element/action configured as 'right' from this element
@@ -198,6 +209,20 @@ export class FocusElement {
             // 检查是否设置基于 DOM 的下一个可聚焦元素
         } else if (this._right) {
             this.doFocusElement(this._right);
+        } else {
+            const parentElement = this._node?.$parent;
+            // 如果没有父元素，或者父元素不是焦点元素
+            if (!parentElement) return;
+            const focusChildren = parentElement.$children.filter(item => item.$data.name === this._node?.$data.name);
+            if (focusChildren.length > 1) {
+                const index = focusChildren.findIndex(item => item == this._node);
+                if (index >= focusChildren.length - 1) {
+                    console.log("已经是最后一个了！");
+                    return;
+                } else {
+                    focusChildren[index + 1].$data.focusElement.focus();
+                }
+            }
         }
 
         this.triggerListener("right");
@@ -274,5 +299,10 @@ export class FocusElement {
             this.isParentFocusElement(item)
         }
         return false;
+    }
+    private getParentElementLastChildren(parentElement: Vue): Vue {
+        const element = parentElement.$children.filter(item => item.$data.name === this._node?.$data.name);
+        if (!element.length) return parentElement;
+        return  this.getParentElementLastChildren(element[element.length - 1])
     }
 }

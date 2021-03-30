@@ -14,9 +14,12 @@
           </focus>
            <focus class="df dfc">
                <div>
-               <focus class="df fw">
-                   <focus v-for="i in 10" :key="i" class="item blue">{{i}}</focus>
-               </focus>
+                <focus class="df fw">
+                    <div v-for="i in 10" :key="i">
+                        <focus v-if="i%2 == 0" class="item blue">{{i}}</focus>
+                        <div  v-if="i%2 != 0" class="item crimson">{{i}}</div>
+                    </div>
+                </focus>
                </div>
                <focus class="df fw">
                    <focus v-for="i in 10" :key="i" class="item yellow">{{i}}</focus>
@@ -68,6 +71,9 @@ export default class Home extends Vue {
 }
 .blueviolet{
     background-color: blueviolet;
+}
+.crimson{
+    background-color: crimson;
 }
 .focus{
     box-sizing: border-box;
