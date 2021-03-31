@@ -190,7 +190,7 @@ export class FocusElement {
         } else if (this._left) {
             this.doFocusElement(this._left);
         } else {
-            const id = this.getFocusElementNextById()?.id;
+            const id = this.getFocusElementPreById()?.id;
             if(id) this.doFocusElement(id);
         }
         this.triggerListener("left");
@@ -205,7 +205,7 @@ export class FocusElement {
         } else if (this._right) {
             this.doFocusElement(this._right);
         } else {
-            const id = this.getFocusElementPreById()?.id;
+            const id = this.getFocusElementNextById()?.id;
             if(id) this.doFocusElement(id);
         }
 
@@ -221,7 +221,7 @@ export class FocusElement {
         } else if (this._up) {
             this.doFocusElement(this._up);
         } else {
-            const id = this.getFocusElementNextById()?.id;
+            const id = this.getFocusElementPreById()?.id;
             if(id) this.doFocusElement(id);
         }
         this.triggerListener("up");
@@ -236,7 +236,7 @@ export class FocusElement {
         } else if (this._down) {
             this.doFocusElement(this._down);
         } else {
-            const id = this.getFocusElementPreById()?.id;
+            const id = this.getFocusElementNextById()?.id;
             if(id) this.doFocusElement(id);
         }
         this.triggerListener("down");
@@ -267,7 +267,7 @@ export class FocusElement {
         })
         console.log(type);
     }
-    getFocusElementPreById(node = this.$node): FocusElement | undefined {
+    getFocusElementNextById(node = this.$node): FocusElement | undefined {
         const parentElement = node?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
         if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
@@ -278,7 +278,7 @@ export class FocusElement {
             const index = focusChildrens.findIndex(item => item === node);
             if (index === focusChildrens.length - 1) {
                 console.log("已经是最后一个了！");
-                return this.getFocusElementPreById(parentElement);
+                return this.getFocusElementNextById(parentElement);
             } else {
                 /**
                  * 前一个元素索引
@@ -287,7 +287,7 @@ export class FocusElement {
                 if (this.isParentFocusElement(focusChildrens[elementIndex])) {
                     const element = this.getParentElementChildrenFirst(focusChildrens[elementIndex]);
                     if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementPreById(focusChildrens[elementIndex])
+                        return this.getFocusElementNextById(focusChildrens[elementIndex])
                     } else {
                         return element.$data.focusElement;
                     }
@@ -297,7 +297,7 @@ export class FocusElement {
             }
         }
     }
-    getFocusElementNextById(node = this.$node): FocusElement | undefined {
+    getFocusElementPreById(node = this.$node): FocusElement | undefined {
         const parentElement = node?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
         if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
@@ -308,7 +308,7 @@ export class FocusElement {
             const index = focusChildrens.findIndex(item => item === node);
             if (index === 0) {
                 console.log("已经是第一个了！");
-                return this.getFocusElementNextById(parentElement);
+                return this.getFocusElementPreById(parentElement);
             } else {
                 /**
                  * 后一个元素索引
@@ -317,7 +317,7 @@ export class FocusElement {
                 if (this.isParentFocusElement(focusChildrens[elementIndex])) {
                     const element = this.getParentElementChildrenLast(focusChildrens[elementIndex]);
                     if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementNextById(focusChildrens[elementIndex])
+                        return this.getFocusElementPreById(focusChildrens[elementIndex])
                     } else {
                         return element.$data.focusElement;
                     }
