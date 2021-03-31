@@ -19,12 +19,6 @@ type VNodeFocusListenerType = keyof VNodeFocusListener;
 export class FocusElement {
     static AutoFocus = "AUTOFOCUS";
 
-    // private properties
-    private _node: Vue | undefined;
-    private _left: string | undefined;
-    private _right: string | undefined;
-    private _up: string | undefined;
-    private _down: string | undefined;
     private _listeners: VNodeFocusListener = {
         focus: false,
         blur: false,
@@ -37,39 +31,39 @@ export class FocusElement {
 
     // directive identifier (matches related DOM id)
     id!: string;
+    parentId!: string;
     // is element 'focussed'
     isFocus = false;
     // is element 'selected'
     isSelect = true;
-    // should element be 'focussed' by default on rendering
-    isDefault = false;
+    /**
+     * 是否为父节点
+     *
+     * @memberof FocusElement
+     */
     isParent = false;
 
     // directive initialisation
     constructor(vnode: VNode) {
         const node = vnode.componentInstance as Vue;
-        this._node = node;
-
-        this.id = "focus-el-" + Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 10);
+        // 如未设定 id 就随机生成
+        this.id = node?.$attrs["id"] || "focus-el-" + Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 10);
+        node.$data.id = this.id;
         if (vnode && vnode.elm) {
             const elm: HTMLElement = <HTMLElement>vnode.elm;
             if (!elm.id) {
                 elm.id = this.id;
             }
         }
-        this.isParent = this.isParentFocusElement(this._node);
+        this.parentId = node.$parent.$data?.name === node.$data.name ? node.$parent.$data?.focusElement?.id : null;
+        this.isParent = this.isParentFocusElement(node);
         // 默认容器组件不可选中
         if (this.isParent) {
             this.isSelect = false;
             // 可指定选中
             this.isSelect = (node?.$attrs["data-select"] === "" || node?.$attrs["data-select"] === "true" || node.$attrs["select"] == "");
         }
-        // css3 dataset 标准
-        this.isDefault = (node?.$attrs["data-default"] === "" || node?.$attrs["data-default"] === "true" || node.$attrs["default"] == "");
-        this._left = (node?.$attrs["data-left"] || "");
-        this._right = (node?.$attrs["data-right"] || "");
-        this._up = (node?.$attrs["data-up"] || "");
-        this._down = (node?.$attrs["data-down"] || "");
+
 
         // 不要缓存侦听器逻辑以防止内存泄漏
         // 而是缓存特定侦听器
@@ -88,16 +82,67 @@ export class FocusElement {
         }
     }
 
+    /**
+     * 获取`dom`的引用
+     *
+     * @readonly
+     * @private
+     * @type {(HTMLElement | null)}
+     * @memberof FocusElement
+     */
+    private get $el(): HTMLElement | null {
+        return document.getElementById(this.id);
+    }
+    /**
+     * 获取所对应的 VNode
+     *
+     * @readonly
+     * @type {(Vue | null)}
+     * @memberof FocusElement
+     */
+    private get $node(): Vue | undefined {
+        return navigationService.getFocusElementVNodeById(this.id)?.componentInstance;
+    }
+    // css3 dataset 标准
+    /**
+     * 是否为默认
+     *
+     * @readonly
+     * @private
+     * @memberof FocusElement
+     */
+    get isDefault():boolean {
+        return (this.$node?.$attrs["data-default"] === "" || this.$node?.$attrs["data-default"] === "true" || this.$node?.$attrs["default"] == "");
+    }
+    /**
+     * 响应`left`事件时所要跳转的元素 `ID`
+     */
+    private get _left() {
+        return (this.$node?.$attrs["data-left"] || this.$node?.$attrs["left"] || "");
+    }
+    /**
+     * 响应`right`事件时所要跳转的元素 `ID`
+     */
+    private get _right() {
+        return (this.$node?.$attrs["data-right"] || this.$node?.$attrs["right"] || "");
+    }
+    /**
+     * 响应`up`事件时所要跳转的元素 `ID`
+     */
+    private get _up() {
+        return (this.$node?.$attrs["data-up"] || this.$node?.$attrs["up"] || "");
+    }
+    /**
+     * 响应`down`事件时所要跳转的元素 `ID`
+     */
+    private get _down() {
+        return (this.$node?.$attrs["data-down"] || this.$node?.$attrs["down"] || "");
+    }
+
     // cleanup when directive is destroyed
     destroy(): void {
-        this.isDefault = false;
         this.isFocus = false;
         this.isSelect = false;
-        this._node = undefined;
-        this._left = undefined;
-        this._right = undefined;
-        this._up = undefined;
-        this._down = undefined;
         this._listeners = {
             focus: false,
             blur: false,
@@ -107,32 +152,6 @@ export class FocusElement {
             down: false,
             click: false
         };
-    }
-
-    // get dom reference of directive
-    get $el(): HTMLElement | null {
-        return document.getElementById(this.id);
-    }
-    /**
-     * 触发监听器事件
-     * @param type 触发类型
-     */
-    triggerListener(type: VNodeFocusListenerType): void {
-        // 检查事件方法是否绑定到组件
-        if (this._listeners[type]) {
-            try {
-                (this._node?.$listeners as Record<string, (id: string) => void>)[type](this.id);
-                
-            } catch (e) {
-                console.log(type, e);
-            }
-        }
-        // 更改作用域变量
-        (this._node?.$scopedSlots.default as NormalizedScopedSlot )({
-            isDefault: this.isDefault,
-            isFocus: this.isFocus
-        })
-                console.log(this._node);
     }
     //// focus handling
     // set focus to element
@@ -147,8 +166,7 @@ export class FocusElement {
         this.isFocus = true;
         // dom 相关
         if (this.$el) {
-            this.$el.className += " focus";
-            // 将“本机”浏览器的焦点设置为输入元素和可聚焦元素。
+            // 浏览器的焦点设置为输入元素和可聚焦元素。
             if (this.$el.tabIndex !== -1 || this.$el.nodeName === "INPUT" || this.$el.nodeName === "TEXTAREA") this.$el.focus();
         }
         this.triggerListener("focus");
@@ -157,9 +175,6 @@ export class FocusElement {
     // remove focus from element
     blur(): void {
         this.isFocus = false;
-        if (this.$el) {
-            this.$el.className = this.$el.className.replace(/\s?\bfocus\b/, "");
-        }
         this.triggerListener("blur");
     }
 
@@ -167,7 +182,7 @@ export class FocusElement {
     /**
      * 将焦点从此元素移到 左边
      */
-    left(node = this._node): void {
+    left(): void {
         // 检查是否应该自动找到下一个可聚焦元素
         if (this._left === FocusElement.AutoFocus) {
             this.defaultFocusPrevious();
@@ -175,28 +190,8 @@ export class FocusElement {
         } else if (this._left) {
             this.doFocusElement(this._left);
         } else {
-            const parentElement = node?.$parent;
-            // 如果没有父元素，或者父元素不是焦点元素
-            if (!parentElement || node?.$data.name !== this._node?.$data.name) return;
-            const focusChildren = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
-            if (focusChildren.length > 1) {
-                const index = focusChildren.findIndex(item => item == node);
-                if (index <= 0) {
-                    console.log("已经是第一个了！");
-                    this.left(parentElement);
-                } else {
-                    if (this.isParentFocusElement(focusChildren[index - 1])) {
-                        const element = this.getParentElementLastChildren(focusChildren[index - 1]);
-                        if (this.isParentFocusElement(element)) {
-                            this.left(focusChildren[index - 1])
-                        } else {
-                            element.$data.focusElement.focus();
-                        }
-                    } else {
-                        focusChildren[index - 1].$data.focusElement.focus();
-                    }
-                }
-            }
+            const id = this.getFocusElementNextById()?.id;
+            if(id) this.doFocusElement(id);
         }
         this.triggerListener("left");
     }
@@ -210,19 +205,8 @@ export class FocusElement {
         } else if (this._right) {
             this.doFocusElement(this._right);
         } else {
-            const parentElement = this._node?.$parent;
-            // 如果没有父元素，或者父元素不是焦点元素
-            if (!parentElement) return;
-            const focusChildren = parentElement.$children.filter(item => item.$data.name === this._node?.$data.name);
-            if (focusChildren.length > 1) {
-                const index = focusChildren.findIndex(item => item == this._node);
-                if (index >= focusChildren.length - 1) {
-                    console.log("已经是最后一个了！");
-                    return;
-                } else {
-                    focusChildren[index + 1].$data.focusElement.focus();
-                }
-            }
+            const id = this.getFocusElementPreById()?.id;
+            if(id) this.doFocusElement(id);
         }
 
         this.triggerListener("right");
@@ -236,6 +220,9 @@ export class FocusElement {
             // 检查是否设置基于 DOM 的下一个可聚焦元素
         } else if (this._up) {
             this.doFocusElement(this._up);
+        } else {
+            const id = this.getFocusElementNextById()?.id;
+            if(id) this.doFocusElement(id);
         }
         this.triggerListener("up");
     }
@@ -248,6 +235,9 @@ export class FocusElement {
             // 检查是否设置基于 DOM 的下一个可聚焦元素
         } else if (this._down) {
             this.doFocusElement(this._down);
+        } else {
+            const id = this.getFocusElementPreById()?.id;
+            if(id) this.doFocusElement(id);
         }
         this.triggerListener("down");
     }
@@ -256,6 +246,87 @@ export class FocusElement {
         this.triggerListener("click");
     }
 
+    /**
+     * 触发监听器事件
+     * @param type 触发类型
+     */
+    private triggerListener(type: VNodeFocusListenerType): void {
+        // 检查事件方法是否绑定到组件
+        if (this._listeners[type]) {
+            try {
+                (this.$node?.$listeners as Record<string, (id: string) => void>)[type](this.id);
+
+            } catch (e) {
+                console.log(type, e);
+            }
+        }
+        // 更改作用域变量
+        (this.$node?.$scopedSlots.default as NormalizedScopedSlot)({
+            isDefault: this.isDefault,
+            isFocus: this.isFocus
+        })
+        console.log(type);
+    }
+    getFocusElementPreById(node = this.$node): FocusElement | undefined {
+        const parentElement = node?.$parent;
+        // 如果没有父元素，或者父元素不是焦点元素
+        if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
+        // 过滤掉普通元素
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
+        // 子节点中是否有可聚焦元素
+        if (focusChildrens.length) {
+            const index = focusChildrens.findIndex(item => item === node);
+            if (index === focusChildrens.length - 1) {
+                console.log("已经是最后一个了！");
+                return this.getFocusElementPreById(parentElement);
+            } else {
+                /**
+                 * 前一个元素索引
+                 */
+                 const elementIndex = index + 1;
+                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
+                    const element = this.getParentElementChildrenFirst(focusChildrens[elementIndex]);
+                    if (this.isParentFocusElement(element)) {
+                        return this.getFocusElementPreById(focusChildrens[elementIndex])
+                    } else {
+                        return element.$data.focusElement;
+                    }
+                } else {
+                    return focusChildrens[elementIndex].$data.focusElement;
+                }
+            }
+        }
+    }
+    getFocusElementNextById(node = this.$node): FocusElement | undefined {
+        const parentElement = node?.$parent;
+        // 如果没有父元素，或者父元素不是焦点元素
+        if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
+        // 过滤掉普通元素
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
+        // 子节点中是否有可聚焦元素
+        if (focusChildrens.length) {
+            const index = focusChildrens.findIndex(item => item === node);
+            if (index === 0) {
+                console.log("已经是第一个了！");
+                return this.getFocusElementNextById(parentElement);
+            } else {
+                /**
+                 * 后一个元素索引
+                 */
+                const elementIndex = index - 1;
+                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
+                    const element = this.getParentElementChildrenLast(focusChildrens[elementIndex]);
+                    if (this.isParentFocusElement(element)) {
+                        return this.getFocusElementNextById(focusChildrens[elementIndex])
+                    } else {
+                        return element.$data.focusElement;
+                    }
+                } else {
+                    return focusChildrens[elementIndex].$data.focusElement;
+                }
+            }
+        }
+    }
     /**
      * 下一个默认焦点
      */
@@ -290,19 +361,24 @@ export class FocusElement {
         if (el) el.focus();
     }
 
-    private isParentFocusElement(vnode: Vue):boolean {
-        if (!vnode.$children.length) return false;
-        for (const item of vnode.$children) {
-            if (item.$data.name === this._node?.$data.name) {
+    private isParentFocusElement(el: Vue): boolean {
+        if (!el.$children.length) return false;
+        for (const item of el.$children) {
+            if (item.$data.name === el?.$data.name) {
                 return true;
             }
             this.isParentFocusElement(item)
         }
         return false;
     }
-    private getParentElementLastChildren(parentElement: Vue): Vue {
-        const element = parentElement.$children.filter(item => item.$data.name === this._node?.$data.name);
+    private getParentElementChildrenFirst(parentElement: Vue): Vue {
+        const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
         if (!element.length) return parentElement;
-        return  this.getParentElementLastChildren(element[element.length - 1])
+        return this.getParentElementChildrenFirst(element[0])
+    }
+    private getParentElementChildrenLast(parentElement: Vue): Vue {
+        const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
+        if (!element.length) return parentElement;
+        return this.getParentElementChildrenLast(element[element.length - 1])
     }
 }

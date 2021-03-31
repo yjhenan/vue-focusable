@@ -2,26 +2,28 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
-    <div class="df fw">
+    <div class="df fw yellow">
+        <focus down="left1"  class="item blueviolet">{{0}}</focus>
         <focus v-for="i in 5" :key="i" class="item blueviolet">{{i}}</focus>
     </div>
-    <focus id="f1" class="df" default>
+    <focus id="f1" class="df crimson" default>
       <!-- <template>
         <div :style="{'color':scope.isFocus?'red':'#333'}">1111111{{scope}}</div>
       </template> -->
-          <focus>
-              <focus v-for="i in 5" :key="i" class="item red">{{i}}</focus>
+          <focus class="blue">
+              <focus id="left0" right="right2"  class="item red">{{0}}</focus>
+              <focus :id="'left' + i" right="right2" v-for="i in 5" :key="i" class="item red">{{i}}</focus>
           </focus>
-           <focus class="df dfc">
+           <focus class="df dfc red">
                <div>
-                <focus class="df fw">
+                <focus class="df fw blueviolet">
                     <div v-for="i in 10" :key="i">
-                        <focus v-if="i%2 == 0" class="item blue">{{i}}</focus>
+                        <focus :id="'right' + i" v-if="i%2 == 0" class="item blue">{{i}}</focus>
                         <div  v-if="i%2 != 0" class="item crimson">{{i}}</div>
                     </div>
                 </focus>
                </div>
-               <focus class="df fw">
+               <focus class="df fw red">
                    <focus v-for="i in 10" :key="i" class="item yellow">{{i}}</focus>
                </focus>
            </focus>
@@ -79,5 +81,6 @@ export default class Home extends Vue {
     box-sizing: border-box;
     opacity: .5;
     border: 1px dashed mediumvioletred;
+    box-shadow: 5px 5px;
 }
 </style>

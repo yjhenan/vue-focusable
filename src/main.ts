@@ -13,6 +13,7 @@ import FocusElement,{SpatialNavigationOptions} from "./focus/focus"
 import { NavigationServiceDirection } from './focus/navigation.service'
 Vue.use(FocusElement, {
   tag: "div",
+  clickable:true,
   setupKeyBoardEvents(el) {
     document.addEventListener("keydown", (e: KeyboardEvent) => {
       // 查找
