@@ -183,7 +183,7 @@ export class FocusElement {
      * 将焦点从此元素移到 左边
      */
     left(): void {
-        // 检查是否应该自动找到下一个可聚焦元素
+        // 检查是否自动找到下一个默认可聚焦元素
         if (this._left === FocusElement.AutoFocus) {
             this.defaultFocusPrevious();
             // 检查是否设置基于 DOM 的下一个可聚焦元素
@@ -198,7 +198,7 @@ export class FocusElement {
 
     // move focus to the element/action configured as 'right' from this element
     right(): void {
-        // 检查是否应该自动找到下一个可聚焦元素
+        // 检查是否自动找到下一个默认可聚焦元素
         if (this._right === FocusElement.AutoFocus) {
             this.defaultFocusNext();
             // 检查是否设置基于 DOM 的下一个可聚焦元素
@@ -214,7 +214,7 @@ export class FocusElement {
 
     // move focus to the element/action configured as 'up' from this element
     up(): void {
-        // 检查是否应该自动找到下一个可聚焦元素
+        // 检查是否自动找到下一个默认可聚焦元素
         if (this._up === FocusElement.AutoFocus) {
             this.defaultFocusPrevious();
             // 检查是否设置基于 DOM 的下一个可聚焦元素
@@ -229,7 +229,7 @@ export class FocusElement {
 
     // move focus to the element/action configured as 'down' from this element
     down(): void {
-        // 检查是否应该自动找到下一个可聚焦元素
+        // 检查是否自动找到下一个默认可聚焦元素
         if (this._down === FocusElement.AutoFocus) {
             this.defaultFocusNext();
             // 检查是否设置基于 DOM 的下一个可聚焦元素
