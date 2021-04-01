@@ -2,7 +2,7 @@
   "name": "vue-focusable",
   "version": "1.0.0",
   "description": "基于 Vue 的 焦点组件",
-  "main": "index.js",
+  "main": "./dist/focusable.js",
   "directories": {
     "example": "example"
   },

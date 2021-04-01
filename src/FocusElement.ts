@@ -1,4 +1,5 @@
 import { VNode } from "vue";
+import { Vue } from "vue/types/vue";
 import { NormalizedScopedSlot } from "vue/types/vnode";
 import { navigationService } from "./index";
 
@@ -267,15 +268,15 @@ export class FocusElement {
         })
         console.log(type);
     }
-    getFocusElementNextById(node = this.$node): FocusElement | undefined {
-        const parentElement = node?.$parent;
+    getFocusElementNextById(el = this.$node): FocusElement | undefined {
+        const parentElement = el?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
+        if (!parentElement || el?.$data.name !== this.$node?.$data.name) return;
         // 过滤掉普通元素
-        const focusChildrens = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === el?.$data.name);
         // 子节点中是否有可聚焦元素
         if (focusChildrens.length) {
-            const index = focusChildrens.findIndex(item => item === node);
+            const index = focusChildrens.findIndex(item => item === el);
             if (index === focusChildrens.length - 1) {
                 console.log("已经是最后一个了！");
                 return this.getFocusElementNextById(parentElement);
@@ -297,15 +298,15 @@ export class FocusElement {
             }
         }
     }
-    getFocusElementPrevById(node = this.$node): FocusElement | undefined {
-        const parentElement = node?.$parent;
+    getFocusElementPrevById(el = this.$node): FocusElement | undefined {
+        const parentElement = el?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
+        if (!parentElement || el?.$data.name !== this.$node?.$data.name) return;
         // 过滤掉普通元素
-        const focusChildrens = parentElement.$children.filter(item => item.$data.name === node?.$data.name);
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === el?.$data.name);
         // 子节点中是否有可聚焦元素
         if (focusChildrens.length) {
-            const index = focusChildrens.findIndex(item => item === node);
+            const index = focusChildrens.findIndex(item => item === el);
             if (index === 0) {
                 console.log("已经是第一个了！");
                 return this.getFocusElementPrevById(parentElement);

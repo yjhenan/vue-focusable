@@ -37,7 +37,7 @@ export default class NavigationService {
      * @type {Map<FocusElement,VNode>}
      * @memberof NavigationService
      */
-    focusAbleElements: Map<FocusElement, VNode> = new Map<FocusElement, VNode>();
+    focusAbleElements = new Map<FocusElement, VNode>();
     /**
      * 最后一个具有焦点的组件ID
      *
