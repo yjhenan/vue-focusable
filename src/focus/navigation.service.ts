@@ -170,7 +170,7 @@ export class NavigationService {
      * 获取默认的焦点组件
      * @returns 默认焦点组件
      */
-    getFocusElementIsDefaultById(): FocusElement | undefined {
+    getFocusElementIsDefault(): FocusElement | undefined {
         for (const [el] of this.focusAbleElements) {
             if (el.isDefault) return el;
         }
