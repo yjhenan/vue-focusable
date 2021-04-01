@@ -56,7 +56,8 @@ export default {
             },
             mounted() {
                 this.$data.focusElement = new FocusElement(this.$vnode);
-                navigationService.registerFocusElement(this.$data.focusElement,this.$vnode);
+                navigationService.registerFocusElement(this.$data.focusElement, this.$vnode);
+                
             },
             destroyed() {
                 if (this.$data.focusElement.id) {

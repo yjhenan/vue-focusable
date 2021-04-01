@@ -111,7 +111,7 @@ export class FocusElement {
      * @private
      * @memberof FocusElement
      */
-    get isDefault():boolean {
+    get isDefault(): boolean {
         return (this.$node?.$attrs["data-default"] === "" || this.$node?.$attrs["data-default"] === "true" || this.$node?.$attrs["default"] == "");
     }
     /**
@@ -190,8 +190,8 @@ export class FocusElement {
         } else if (this._left) {
             this.doFocusElement(this._left);
         } else {
-            const id = this.getFocusElementPreById()?.id;
-            if(id) this.doFocusElement(id);
+            const id = this.getFocusElementPrevById()?.id;
+            if (id) this.doFocusElement(id);
         }
         this.triggerListener("left");
     }
@@ -206,7 +206,7 @@ export class FocusElement {
             this.doFocusElement(this._right);
         } else {
             const id = this.getFocusElementNextById()?.id;
-            if(id) this.doFocusElement(id);
+            if (id) this.doFocusElement(id);
         }
 
         this.triggerListener("right");
@@ -221,8 +221,8 @@ export class FocusElement {
         } else if (this._up) {
             this.doFocusElement(this._up);
         } else {
-            const id = this.getFocusElementPreById()?.id;
-            if(id) this.doFocusElement(id);
+            const id = this.getFocusElementPrevById()?.id;
+            if (id) this.doFocusElement(id);
         }
         this.triggerListener("up");
     }
@@ -237,7 +237,7 @@ export class FocusElement {
             this.doFocusElement(this._down);
         } else {
             const id = this.getFocusElementNextById()?.id;
-            if(id) this.doFocusElement(id);
+            if (id) this.doFocusElement(id);
         }
         this.triggerListener("down");
     }
@@ -283,7 +283,7 @@ export class FocusElement {
                 /**
                  * 前一个元素索引
                  */
-                 const elementIndex = index + 1;
+                const elementIndex = index + 1;
                 if (this.isParentFocusElement(focusChildrens[elementIndex])) {
                     const element = this.getParentElementChildrenFirst(focusChildrens[elementIndex]);
                     if (this.isParentFocusElement(element)) {
@@ -297,7 +297,7 @@ export class FocusElement {
             }
         }
     }
-    getFocusElementPreById(node = this.$node): FocusElement | undefined {
+    getFocusElementPrevById(node = this.$node): FocusElement | undefined {
         const parentElement = node?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
         if (!parentElement || node?.$data.name !== this.$node?.$data.name) return;
@@ -308,7 +308,7 @@ export class FocusElement {
             const index = focusChildrens.findIndex(item => item === node);
             if (index === 0) {
                 console.log("已经是第一个了！");
-                return this.getFocusElementPreById(parentElement);
+                return this.getFocusElementPrevById(parentElement);
             } else {
                 /**
                  * 后一个元素索引
@@ -317,7 +317,7 @@ export class FocusElement {
                 if (this.isParentFocusElement(focusChildrens[elementIndex])) {
                     const element = this.getParentElementChildrenLast(focusChildrens[elementIndex]);
                     if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementPreById(focusChildrens[elementIndex])
+                        return this.getFocusElementPrevById(focusChildrens[elementIndex])
                     } else {
                         return element.$data.focusElement;
                     }
@@ -331,36 +331,35 @@ export class FocusElement {
      * 下一个默认焦点
      */
     private defaultFocusNext(): void {
-        if (this.$el) {
-            // 检查是否可以找到同级元素
-            const next = this.$el.nextElementSibling;
-            // 检查元素是否存在并且具有id
-            if (next && next.id) {
-                // set focus to component
-                this.doFocusElement(next.id);
-            }
+        const next = navigationService.getDefaultFocusNextById(this.id);
+        if (next && next.id) {
+            // 为组件设置焦点
+            this.doFocusElement(next.id);
         }
     }
     /**
      * 上一个默认焦点
      */
     private defaultFocusPrevious(): void {
-        if (this.$el) {
-            // 检查是否可以找到同级元素
-            const previous = this.$el.previousElementSibling;
-            // check if element exist and has current directive selector
-            if (previous && previous.id) {
-                // set focus to component
-                this.doFocusElement(previous.id);
-            }
+        const previous = navigationService.getDefaultFocusPreviousById(this.id);
+        if (previous && previous.id) {
+            // 为组件设置焦点
+            this.doFocusElement(previous.id);
         }
     }
-
+    /**
+     * 将`ID`对应的焦点组件设置为焦点
+     * @param id 
+     */
     private doFocusElement(id: string): void {
         const el = navigationService.getFocusElementById(id);
         if (el) el.focus();
     }
-
+    /**
+     * 检测焦点组件是否是父组件，既容器组件
+     * @param el 需要检测的组件
+     * @returns 是否是父组件
+     */
     private isParentFocusElement(el: Vue): boolean {
         if (!el.$children.length) return false;
         for (const item of el.$children) {
@@ -371,11 +370,21 @@ export class FocusElement {
         }
         return false;
     }
+    /**
+     * 查找指定父组件内的第一个子组件
+     * @param parentElement 父组件
+     * @returns 第一个子组件
+     */
     private getParentElementChildrenFirst(parentElement: Vue): Vue {
         const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
         if (!element.length) return parentElement;
         return this.getParentElementChildrenFirst(element[0])
     }
+    /**
+     * 查找指定父组件内的最后一个子组件
+     * @param parentElement 父组件
+     * @returns 最后一个子组件
+     */
     private getParentElementChildrenLast(parentElement: Vue): Vue {
         const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
         if (!element.length) return parentElement;

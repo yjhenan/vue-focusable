@@ -4,9 +4,9 @@
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
     <div class="df fw yellow">
         <focus down="left1"  class="item blueviolet">{{0}}</focus>
-        <focus v-for="i in 5" :key="i" class="item blueviolet">{{i}}</focus>
+        <focus v-for="i in 5" :key="i" class="item blueviolet" default>{{i}}</focus>
     </div>
-    <focus id="f1" class="df crimson" default>
+    <focus id="f1" class="df crimson">
       <!-- <template>
         <div :style="{'color':scope.isFocus?'red':'#333'}">1111111{{scope}}</div>
       </template> -->
@@ -17,6 +17,7 @@
            <focus class="df dfc red">
                <div>
                 <focus class="df fw blueviolet">
+                    <focus left="AUTOFOCUS" down="AUTOFOCUS" class="item blue">{{0}}</focus>
                     <div v-for="i in 10" :key="i">
                         <focus :id="'right' + i" v-if="i%2 == 0" class="item blue">{{i}}</focus>
                         <div  v-if="i%2 != 0" class="item crimson">{{i}}</div>
@@ -24,7 +25,7 @@
                 </focus>
                </div>
                <focus class="df fw red">
-                   <focus v-for="i in 10" :key="i" class="item yellow">{{i}}</focus>
+                   <focus v-for="i in 10" :key="i" class="item yellow" default>{{i}}</focus>
                </focus>
            </focus>
     </focus>

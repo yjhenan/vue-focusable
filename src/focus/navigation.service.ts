@@ -10,7 +10,18 @@ export enum NavigationServiceDirection {
 }
 
 export class NavigationService {
-    focusAbleElements: Map<FocusElement,VNode> = new Map<FocusElement,VNode>();
+    /**
+     * 所有焦点组件集合
+     *
+     * @type {Map<FocusElement,VNode>}
+     * @memberof NavigationService
+     */
+    focusAbleElements: Map<FocusElement, VNode> = new Map<FocusElement, VNode>();
+    /**
+     * 最后一个具有焦点的组件ID
+     *
+     * @memberof NavigationService
+     */
     lastElementIdInFocus = "";
     blockAllSpatialNavigation = false;
 
@@ -62,7 +73,10 @@ export class NavigationService {
         return undefined;
     }
 
-    // action a new spatial navigation action
+    /**
+     * 触发事件：进行导航
+     * @param action 动作
+     */
     spatialNavigationAction(action: NavigationServiceDirection): void {
         const el = this.getFocusElementInFocus();
 
@@ -104,8 +118,8 @@ export class NavigationService {
      * 从集合中添加对应的组件
      * @param focusElement 所添加组件
      */
-    registerFocusElement(focusElement: FocusElement,vnode:VNode): void {
-        this.focusAbleElements.set(focusElement,vnode);
+    registerFocusElement(focusElement: FocusElement, vnode: VNode): void {
+        this.focusAbleElements.set(focusElement, vnode);
         // 如果没有活动焦点且当前元素为默认值，则设置初始焦点
         if (focusElement.isDefault && !this.getFocusElementInFocus()) {
             focusElement.focus();
@@ -134,9 +148,9 @@ export class NavigationService {
     /**
      * 根据 id 获取对应的组件
      * @param id 组件 id
-     * @returns id 所对应的组件
+     * @returns id 所对应的组件 `FocusElement`
      */
-     getFocusElementById(id: string): FocusElement | undefined {
+    getFocusElementById(id: string): FocusElement | undefined {
         for (const [el] of this.focusAbleElements) {
             if (el.id === id) return el;
         }
@@ -147,21 +161,51 @@ export class NavigationService {
      * @returns id 所对应的`VNode`
      */
     getFocusElementVNodeById(id: string): VNode | undefined {
-        for (const [el,vnode] of this.focusAbleElements) {
+        for (const [el, vnode] of this.focusAbleElements) {
             if (el.id === id) return vnode;
         }
     }
-    
+
     /**
      * 获取默认的焦点组件
      * @returns 默认焦点组件
      */
-    getFocusElementIsDefault(): FocusElement | undefined {
+    getFocusElementIsDefaultById(): FocusElement | undefined {
         for (const [el] of this.focusAbleElements) {
             if (el.isDefault) return el;
         }
     }
-
+    /**
+     * 获取下一个默认焦点元素
+     *
+     * @param {string} id 当前组件 ID
+     * @returns {(FocusElement  | undefined)} 下一个组件
+     * @memberof NavigationService
+     */
+    getDefaultFocusNextById(id: string): FocusElement  | undefined {
+        let flag = false;
+        for (const [el] of this.focusAbleElements) {
+            if (el.id === id) flag = true;
+            if (flag && el.isDefault) return el;
+        }
+    }
+    /**
+     * 获取上一个默认焦点元素
+     *
+     * @param {string} id 当前组件 ID
+     * @returns {(FocusElement  | undefined)} 上一个组件
+     * @memberof NavigationService
+     */
+    getDefaultFocusPreviousById(id: string): FocusElement | undefined {
+        const focusElements:Array<FocusElement> = [];
+        this.focusAbleElements.forEach((value, key) => {
+            if (key.isDefault) {
+                focusElements.push(key)
+            }
+            if (key.id == id) return;
+        });
+        return focusElements.pop();
+    }
     /**
      * 清楚所有组件的焦点状态
      */
