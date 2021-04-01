@@ -1,0 +1,28 @@
+{
+  "name": "vue-focusable",
+  "version": "1.0.0",
+  "description": "基于 Vue 的 焦点组件",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yjhenan/vue-focusable.git"
+  },
+  "keywords": [
+    "focusable"
+  ],
+  "author": "yjhenan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yjhenan/vue-focusable/issues"
+  },
+  "homepage": "https://github.com/yjhenan/vue-focusable#readme",
+  "dependencies": {
+    "vue": "^2.6.11"
+  }
+}
