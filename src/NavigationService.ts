@@ -1,15 +1,36 @@
 import { VNode } from "vue";
 import { FocusElement } from "./FocusElement";
 
+/**
+ * 组件可以响应的事件
+ *
+ * @export
+ * @enum {number}
+ */
 export enum NavigationServiceDirection {
+    /**
+     * 上
+     */
     Up = "up",
+    /**
+     * 下
+     */
     Down = "down",
+    /**
+     * 左
+     */
     Left = "left",
+    /**
+     * 右
+     */
     Right = "right",
+    /**
+     * 确认
+     */
     Enter = "enter"
 }
 
-export class NavigationService {
+export default class NavigationService {
     /**
      * 所有焦点组件集合
      *

@@ -9,18 +9,15 @@ Vue.config.productionTip = false
 
 // Vue.use(VueFocus);
 
-import FocusElement,{SpatialNavigationOptions} from "./focus/focus"
-import { NavigationServiceDirection } from './focus/navigation.service'
-Vue.use(FocusElement, {
+import Focusable, { SpatialNavigationOptions ,NavigationServiceDirection } from "../../src/"
+Vue.use(Focusable, <SpatialNavigationOptions>{
   tag: "div",
-  clickable:true,
+  clickable: true,
   setupKeyBoardEvents(el) {
     document.addEventListener("keydown", (e: KeyboardEvent) => {
       // 查找
-      const keyCode = e.which ? e.which: e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
+      const keyCode = e.which ? e.which : e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
       if (el) {
-        console.log(keyCode);
-        
         switch (keyCode) {
           case 38:
             el.spatialNavigationAction(NavigationServiceDirection.Up)
@@ -41,7 +38,7 @@ Vue.use(FocusElement, {
       }
     });
   }
-}as SpatialNavigationOptions)
+})
 
 new Vue({
   router,

@@ -1,6 +1,6 @@
 import { VNode } from "vue";
 import { NormalizedScopedSlot } from "vue/types/vnode";
-import { navigationService } from "./focus";
+import { navigationService } from "./index";
 
 interface VNodeFocusListener {
     focus: boolean;

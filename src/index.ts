@@ -2,15 +2,13 @@ import Vue, { VueConstructor, } from "vue"
 import { NormalizedScopedSlot } from "vue/types/vnode";
 
 import { FocusElement } from "./FocusElement";
-import { NavigationService } from "./navigation.service";
+import NavigationService from "./NavigationService";
 
+export { NavigationServiceDirection } from "./NavigationService";
 
 export let navigationService: NavigationService;
 
 const ElementName = "Focus-" + Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 10);
-
-// type NavigationServiceDirection = "Up" | "Down" | "Left" | "Right" | "Enter"
-
 
 export type SpatialNavigationOptions = {
     /**
@@ -35,7 +33,7 @@ export default {
     install(Vue: VueConstructor<Vue>, options: SpatialNavigationOptions): void {
         navigationService = new NavigationService(options.clickable);
         options.setupKeyBoardEvents(navigationService);
-        Vue.component('Focus', {
+        Vue.component('Focusable', {
             data() {
                 return {
                     id:null,

@@ -3,32 +3,32 @@
     <img alt="Vue logo" src="../assets/logo.png" />
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
     <div class="df fw yellow">
-        <focus down="left1"  class="item blueviolet">{{0}}</focus>
-        <focus v-for="i in 5" :key="i" class="item blueviolet" default>{{i}}</focus>
+        <Focusable down="left1"  class="item blueviolet">{{0}}</Focusable>
+        <Focusable v-for="i in 5" :key="i" class="item blueviolet" default>{{i}}</Focusable>
     </div>
-    <focus id="f1" class="df crimson">
+    <Focusable id="f1" class="df crimson">
       <!-- <template>
         <div :style="{'color':scope.isFocus?'red':'#333'}">1111111{{scope}}</div>
       </template> -->
-          <focus class="blue">
-              <focus id="left0" right="right2"  class="item red">{{0}}</focus>
-              <focus :id="'left' + i" right="right2" v-for="i in 5" :key="i" class="item red">{{i}}</focus>
-          </focus>
-           <focus class="df dfc red">
+          <Focusable class="blue">
+              <Focusable id="left0" right="right2"  class="item red">{{0}}</Focusable>
+              <Focusable :id="'left' + i" right="right2" v-for="i in 5" :key="i" class="item red">{{i}}</Focusable>
+          </Focusable>
+           <Focusable class="df dfc red">
                <div>
-                <focus class="df fw blueviolet">
-                    <focus left="AUTOFOCUS" down="AUTOFOCUS" class="item blue">{{0}}</focus>
+                <Focusable class="df fw blueviolet">
+                    <Focusable left="AUTOFOCUS" down="AUTOFOCUS" class="item blue">{{0}}</Focusable>
                     <div v-for="i in 10" :key="i">
-                        <focus :id="'right' + i" v-if="i%2 == 0" class="item blue">{{i}}</focus>
+                        <Focusable :id="'right' + i" v-if="i%2 == 0" class="item blue">{{i}}</Focusable>
                         <div  v-if="i%2 != 0" class="item crimson">{{i}}</div>
                     </div>
-                </focus>
+                </Focusable>
                </div>
-               <focus class="df fw red">
-                   <focus v-for="i in 10" :key="i" class="item yellow" default>{{i}}</focus>
-               </focus>
-           </focus>
-    </focus>
+               <Focusable class="df fw red">
+                   <Focusable v-for="i in 10" :key="i" class="item yellow" default>{{i}}</Focusable>
+               </Focusable>
+           </Focusable>
+    </Focusable>
   </div>
 </template>
 
