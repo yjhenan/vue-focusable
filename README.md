@@ -57,6 +57,7 @@ Vue.use(Focusable, <SpatialNavigationOptions>{
 事件参数：
 ```js
 {
+    id: string,
     isDefault: boolean,
     isFocus: boolean
 }

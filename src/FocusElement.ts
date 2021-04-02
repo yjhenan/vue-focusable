@@ -258,9 +258,17 @@ export class FocusElement {
                 const func = this.$node?.$listeners[type];
                 if (!func) return;
                 if (Array.isArray(func)) {
-                    func.forEach(item => item(this.id))
+                    func.forEach(item => item({
+                        id: this.id,
+                        isDefault: this.isDefault,
+                        isFocus: this.isFocus
+                    }))
                 } else {
-                    func(this.id);
+                    func({
+                        id: this.id,
+                        isDefault: this.isDefault,
+                        isFocus: this.isFocus
+                    });
                 }
 
             } catch (e) {
