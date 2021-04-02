@@ -9,14 +9,14 @@ Vue.config.productionTip = false
 
 // Vue.use(VueFocus);
 
-import Focusable, { SpatialNavigationOptions ,NavigationServiceDirection } from "../../src/"
+import Focusable, { SpatialNavigationOptions ,NavigationServiceDirection } from "../../dist/"
 Vue.use(Focusable, <SpatialNavigationOptions>{
   tag: "div",
   clickable: true,
   setupKeyBoardEvents(el) {
     document.addEventListener("keydown", (e: KeyboardEvent) => {
       // 查找
-      const keyCode = e.which ? e.which : e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
+      const keyCode = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
       if (el) {
         switch (keyCode) {
           case 38:

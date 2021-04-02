@@ -283,11 +283,20 @@ var FocusElement = /** @class */ (function () {
      * @param type 触发类型
      */
     FocusElement.prototype.triggerListener = function (type) {
+        var _this = this;
         var _a, _b;
         // 检查事件方法是否绑定到组件
         if (this._listeners[type]) {
             try {
-                ((_a = this.$node) === null || _a === void 0 ? void 0 : _a.$listeners)[type](this.id);
+                var func = (_a = this.$node) === null || _a === void 0 ? void 0 : _a.$listeners[type];
+                if (!func)
+                    return;
+                if (Array.isArray(func)) {
+                    func.forEach(function (item) { return item(_this.id); });
+                }
+                else {
+                    func(this.id);
+                }
             }
             catch (e) {
                 console.log(type, e);
@@ -301,74 +310,62 @@ var FocusElement = /** @class */ (function () {
         console.log(type);
     };
     FocusElement.prototype.getFocusElementNextById = function (el) {
-        var _a;
+        var _this = this;
         if (el === void 0) { el = this.$node; }
         var parentElement = el === null || el === void 0 ? void 0 : el.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || (el === null || el === void 0 ? void 0 : el.$data.name) !== ((_a = this.$node) === null || _a === void 0 ? void 0 : _a.$data.name))
+        if (!parentElement)
             return;
         // 过滤掉普通元素
-        var focusChildrens = parentElement.$children.filter(function (item) { return item.$data.name === (el === null || el === void 0 ? void 0 : el.$data.name); });
-        // 子节点中是否有可聚焦元素
-        if (focusChildrens.length) {
-            var index = focusChildrens.findIndex(function (item) { return item === el; });
-            if (index === focusChildrens.length - 1) {
-                console.log("已经是最后一个了！");
-                return this.getFocusElementNextById(parentElement);
+        var focusChildrens = parentElement.$children.filter(function (item) { var _a; return item.$data.name === ((_a = _this.$node) === null || _a === void 0 ? void 0 : _a.$data.name); });
+        // 判断当前元素的位置
+        var index = focusChildrens.findIndex(function (item) { return item.$data.id === (el === null || el === void 0 ? void 0 : el.$data.id); });
+        // 如果是最后一个
+        if (index === focusChildrens.length - 1) {
+            console.log("已经是最后一个了！");
+            return this.getFocusElementNextById(parentElement);
+        }
+        else {
+            var elementIndex = index + 1;
+            /**
+             * 前一个元素
+             */
+            var el_1 = focusChildrens[elementIndex];
+            // 是否还有子元素
+            if (this.isParentFocusElement(el_1)) {
+                return this.getParentElementChildrenFirst(el_1).$data.focusElement;
             }
             else {
-                /**
-                 * 前一个元素索引
-                 */
-                var elementIndex = index + 1;
-                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
-                    var element = this.getParentElementChildrenFirst(focusChildrens[elementIndex]);
-                    if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementNextById(focusChildrens[elementIndex]);
-                    }
-                    else {
-                        return element.$data.focusElement;
-                    }
-                }
-                else {
-                    return focusChildrens[elementIndex].$data.focusElement;
-                }
+                return el_1.$data.focusElement;
             }
         }
     };
     FocusElement.prototype.getFocusElementPrevById = function (el) {
-        var _a;
+        var _this = this;
         if (el === void 0) { el = this.$node; }
         var parentElement = el === null || el === void 0 ? void 0 : el.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || (el === null || el === void 0 ? void 0 : el.$data.name) !== ((_a = this.$node) === null || _a === void 0 ? void 0 : _a.$data.name))
+        if (!parentElement)
             return;
         // 过滤掉普通元素
-        var focusChildrens = parentElement.$children.filter(function (item) { return item.$data.name === (el === null || el === void 0 ? void 0 : el.$data.name); });
-        // 子节点中是否有可聚焦元素
-        if (focusChildrens.length) {
-            var index = focusChildrens.findIndex(function (item) { return item === el; });
-            if (index === 0) {
-                console.log("已经是第一个了！");
-                return this.getFocusElementPrevById(parentElement);
+        var focusChildrens = parentElement.$children.filter(function (item) { var _a; return item.$data.name === ((_a = _this.$node) === null || _a === void 0 ? void 0 : _a.$data.name); });
+        var index = focusChildrens.findIndex(function (item) { return item.$data.id === (el === null || el === void 0 ? void 0 : el.$data.id); });
+        if (index <= 0) {
+            console.log("已经是第一个了！");
+            return this.getFocusElementPrevById(parentElement);
+        }
+        else {
+            var elementIndex = index - 1;
+            /**
+             * 后一个元素
+             */
+            var el_2 = focusChildrens[elementIndex];
+            // 是否还有子元素
+            if (this.isParentFocusElement(el_2)) {
+                return this.getParentElementChildrenLast(el_2).$data.focusElement;
             }
             else {
-                /**
-                 * 后一个元素索引
-                 */
-                var elementIndex = index - 1;
-                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
-                    var element = this.getParentElementChildrenLast(focusChildrens[elementIndex]);
-                    if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementPrevById(focusChildrens[elementIndex]);
-                    }
-                    else {
-                        return element.$data.focusElement;
-                    }
-                }
-                else {
-                    return focusChildrens[elementIndex].$data.focusElement;
-                }
+                return el_2.$data.focusElement;
             }
         }
     };

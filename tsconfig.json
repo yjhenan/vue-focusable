@@ -31,20 +31,20 @@
 
     /* 严格类型检查选项 */
     "strict": true,                                 /* 启用所有严格类型检查选项。 */
-    // "noImplicitAny": true,                       /* 对具有隐式 "any" 类型的表达式和声明引发错误。 */
-    // "strictNullChecks": true,                    /* 启用严格的 NULL 检查。 */
-    // "strictFunctionTypes": true,                 /* 对函数类型启用严格检查。 */
-    // "strictBindCallApply": true,                 /* 对函数启用严格的 "bind"、"call" 和 "apply" 方法。 */
-    // "strictPropertyInitialization": true,        /* 启用类中属性初始化的严格检查。 */
-    // "noImplicitThis": true,                      /* 在带隐式“any" 类型的 "this" 表达式上引发错误。 */
-    // "alwaysStrict": true,                        /* 以严格模式进行分析，并为每个源文件发出 "use strict" 指令。 */
+    "noImplicitAny": true,                       /* 对具有隐式 "any" 类型的表达式和声明引发错误。 */
+    "strictNullChecks": true,                    /* 启用严格的 NULL 检查。 */
+    "strictFunctionTypes": true,                 /* 对函数类型启用严格检查。 */
+    "strictBindCallApply": true,                 /* 对函数启用严格的 "bind"、"call" 和 "apply" 方法。 */
+    "strictPropertyInitialization": true,        /* 启用类中属性初始化的严格检查。 */
+    "noImplicitThis": true,                      /* 在带隐式“any" 类型的 "this" 表达式上引发错误。 */
+    "alwaysStrict": true,                        /* 以严格模式进行分析，并为每个源文件发出 "use strict" 指令。 */
 
     /* 其他检查 */
-    // "noUnusedLocals": true,                      /* 报告未使用的局部变量上的错误。 */
-    // "noUnusedParameters": true,                  /* 报告未使用的参数上的错误。 */
-    // "noImplicitReturns": true,                   /* 在函数中的所有代码路径并非都返回值时报告错误。 */
-    // "noFallthroughCasesInSwitch": true,          /* 报告 switch 语句中遇到 fallthrough 情况的错误。 */
-    // "noUncheckedIndexedAccess": true,            /* 在索引签名结果中包含“未定义” */
+    "noUnusedLocals": true,                      /* 报告未使用的局部变量上的错误。 */
+    "noUnusedParameters": true,                  /* 报告未使用的参数上的错误。 */
+    "noImplicitReturns": true,                   /* 在函数中的所有代码路径并非都返回值时报告错误。 */
+    "noFallthroughCasesInSwitch": true,          /* 报告 switch 语句中遇到 fallthrough 情况的错误。 */
+    "noUncheckedIndexedAccess": true,            /* 在索引签名结果中包含“未定义” */
     // "noPropertyAccessFromIndexSignature": true,  /* 要求索引签名中有未声明的属性以使用元素访问。 */
 
     /* 模块分辨率选项 */

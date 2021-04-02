@@ -83,7 +83,7 @@ var NavigationService = /** @class */ (function () {
         // enable mouseover event
         document.addEventListener("mouseover", function (e) {
             if (_this.blockAllSpatialNavigation)
-                return false;
+                return;
             var el = _this.findFocusable(e.target);
             if (el)
                 el.focus();
@@ -91,7 +91,7 @@ var NavigationService = /** @class */ (function () {
         // enable mouseout event
         document.addEventListener("mouseout", function (e) {
             if (_this.blockAllSpatialNavigation)
-                return false;
+                return;
             var el = _this.findFocusable(e.target);
             if (el)
                 el.blur();
@@ -99,7 +99,7 @@ var NavigationService = /** @class */ (function () {
         // enable click event
         document.addEventListener("click", function (e) {
             if (_this.blockAllSpatialNavigation)
-                return false;
+                return;
             var el = _this.findFocusable(e.target);
             if (el)
                 el.enter();
@@ -201,6 +201,7 @@ var NavigationService = /** @class */ (function () {
             }
             finally { if (e_1) throw e_1.error; }
         }
+        return;
     };
     /**
      * 根据 id 获取对应的组件
@@ -223,6 +224,7 @@ var NavigationService = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
+        return;
     };
     /**
      * 根据`id`获取对应的`VNode`
@@ -245,6 +247,7 @@ var NavigationService = /** @class */ (function () {
             }
             finally { if (e_3) throw e_3.error; }
         }
+        return;
     };
     /**
      * 获取默认的焦点组件
@@ -266,6 +269,7 @@ var NavigationService = /** @class */ (function () {
             }
             finally { if (e_4) throw e_4.error; }
         }
+        return;
     };
     /**
      * 获取下一个默认焦点元素
@@ -293,6 +297,7 @@ var NavigationService = /** @class */ (function () {
             }
             finally { if (e_5) throw e_5.error; }
         }
+        return;
     };
     /**
      * 获取上一个默认焦点元素
@@ -303,7 +308,7 @@ var NavigationService = /** @class */ (function () {
      */
     NavigationService.prototype.getDefaultFocusPreviousById = function (id) {
         var focusElements = [];
-        this.focusAbleElements.forEach(function (value, key) {
+        this.focusAbleElements.forEach(function (_value, key) {
             if (key.isDefault) {
                 focusElements.push(key);
             }

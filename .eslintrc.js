@@ -3,9 +3,8 @@ module.exports = {
   env: {
     node: true
   },
-  'extends': [
+  extends: [
     'eslint:recommended',
-    '@vue/typescript/recommended'
   ],
   parserOptions: {
     ecmaVersion: 2020

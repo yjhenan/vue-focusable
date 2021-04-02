@@ -255,7 +255,13 @@ export class FocusElement {
         // 检查事件方法是否绑定到组件
         if (this._listeners[type]) {
             try {
-                (this.$node?.$listeners as Record<string, (id: string) => void>)[type](this.id);
+                const func = this.$node?.$listeners[type];
+                if (!func) return;
+                if (Array.isArray(func)) {
+                    func.forEach(item => item(this.id))
+                } else {
+                    func(this.id);
+                }
 
             } catch (e) {
                 console.log(type, e);
@@ -271,60 +277,50 @@ export class FocusElement {
     getFocusElementNextById(el = this.$node): FocusElement | undefined {
         const parentElement = el?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || el?.$data.name !== this.$node?.$data.name) return;
+        if (!parentElement) return;
         // 过滤掉普通元素
-        const focusChildrens = parentElement.$children.filter(item => item.$data.name === el?.$data.name);
-        // 子节点中是否有可聚焦元素
-        if (focusChildrens.length) {
-            const index = focusChildrens.findIndex(item => item === el);
-            if (index === focusChildrens.length - 1) {
-                console.log("已经是最后一个了！");
-                return this.getFocusElementNextById(parentElement);
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
+        // 判断当前元素的位置
+        const index = focusChildrens.findIndex(item => item.$data.id === el?.$data.id);
+        // 如果是最后一个
+        if (index === focusChildrens.length - 1) {
+            console.log("已经是最后一个了！");
+            return this.getFocusElementNextById(parentElement);
+        } else {
+            const elementIndex = index + 1;
+            /**
+             * 前一个元素
+             */
+            const el = focusChildrens[elementIndex] as Vue;
+            // 是否还有子元素
+            if (this.isParentFocusElement(el)) {
+                return this.getParentElementChildrenFirst(el).$data.focusElement;
             } else {
-                /**
-                 * 前一个元素索引
-                 */
-                const elementIndex = index + 1;
-                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
-                    const element = this.getParentElementChildrenFirst(focusChildrens[elementIndex]);
-                    if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementNextById(focusChildrens[elementIndex])
-                    } else {
-                        return element.$data.focusElement;
-                    }
-                } else {
-                    return focusChildrens[elementIndex].$data.focusElement;
-                }
+                return el.$data.focusElement;
             }
         }
     }
     getFocusElementPrevById(el = this.$node): FocusElement | undefined {
         const parentElement = el?.$parent;
         // 如果没有父元素，或者父元素不是焦点元素
-        if (!parentElement || el?.$data.name !== this.$node?.$data.name) return;
+        if (!parentElement) return;
         // 过滤掉普通元素
-        const focusChildrens = parentElement.$children.filter(item => item.$data.name === el?.$data.name);
-        // 子节点中是否有可聚焦元素
-        if (focusChildrens.length) {
-            const index = focusChildrens.findIndex(item => item === el);
-            if (index === 0) {
-                console.log("已经是第一个了！");
-                return this.getFocusElementPrevById(parentElement);
+        const focusChildrens = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
+        const index = focusChildrens.findIndex(item => item.$data.id === el?.$data.id);
+        if (index <= 0) {
+            console.log("已经是第一个了！");
+            return this.getFocusElementPrevById(parentElement);
+        } else {
+            const elementIndex = index - 1;
+            /**
+             * 后一个元素
+             */
+            const el = focusChildrens[elementIndex] as Vue;
+            // 是否还有子元素
+            if (this.isParentFocusElement(el)) {
+                return this.getParentElementChildrenLast(el).$data.focusElement;
             } else {
-                /**
-                 * 后一个元素索引
-                 */
-                const elementIndex = index - 1;
-                if (this.isParentFocusElement(focusChildrens[elementIndex])) {
-                    const element = this.getParentElementChildrenLast(focusChildrens[elementIndex]);
-                    if (this.isParentFocusElement(element)) {
-                        return this.getFocusElementPrevById(focusChildrens[elementIndex])
-                    } else {
-                        return element.$data.focusElement;
-                    }
-                } else {
-                    return focusChildrens[elementIndex].$data.focusElement;
-                }
+                return el.$data.focusElement;
             }
         }
     }
@@ -379,7 +375,7 @@ export class FocusElement {
     private getParentElementChildrenFirst(parentElement: Vue): Vue {
         const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
         if (!element.length) return parentElement;
-        return this.getParentElementChildrenFirst(element[0])
+        return this.getParentElementChildrenFirst(element[0] as Vue)
     }
     /**
      * 查找指定父组件内的最后一个子组件
@@ -389,6 +385,6 @@ export class FocusElement {
     private getParentElementChildrenLast(parentElement: Vue): Vue {
         const element = parentElement.$children.filter(item => item.$data.name === this.$node?.$data.name);
         if (!element.length) return parentElement;
-        return this.getParentElementChildrenLast(element[element.length - 1])
+        return this.getParentElementChildrenLast(element[element.length - 1] as Vue)
     }
 }

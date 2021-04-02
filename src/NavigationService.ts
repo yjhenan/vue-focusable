@@ -54,7 +54,7 @@ export default class NavigationService {
     setupMouseEvents(): void {
         // enable mouseover event
         document.addEventListener("mouseover", (e: MouseEvent) => {
-            if (this.blockAllSpatialNavigation) return false;
+            if (this.blockAllSpatialNavigation) return;
 
             const el = this.findFocusable(<HTMLElement>e.target);
             if (el) el.focus();
@@ -62,7 +62,7 @@ export default class NavigationService {
 
         // enable mouseout event
         document.addEventListener("mouseout", (e: MouseEvent) => {
-            if (this.blockAllSpatialNavigation) return false;
+            if (this.blockAllSpatialNavigation) return;
 
             const el = this.findFocusable(<HTMLElement>e.target);
             if (el) el.blur();
@@ -71,7 +71,7 @@ export default class NavigationService {
 
         // enable click event
         document.addEventListener("click", (e: MouseEvent) => {
-            if (this.blockAllSpatialNavigation) return false;
+            if (this.blockAllSpatialNavigation) return;
             const el = this.findFocusable(<HTMLElement>e.target);
             if (el) el.enter();
         });
@@ -164,6 +164,7 @@ export default class NavigationService {
         for (const [el] of this.focusAbleElements) {
             if (el.isFocus) return el;
         }
+        return;
     }
 
     /**
@@ -175,6 +176,7 @@ export default class NavigationService {
         for (const [el] of this.focusAbleElements) {
             if (el.id === id) return el;
         }
+        return;
     }
     /**
      * 根据`id`获取对应的`VNode`
@@ -185,6 +187,7 @@ export default class NavigationService {
         for (const [el, vnode] of this.focusAbleElements) {
             if (el.id === id) return vnode;
         }
+        return;
     }
 
     /**
@@ -195,6 +198,7 @@ export default class NavigationService {
         for (const [el] of this.focusAbleElements) {
             if (el.isDefault) return el;
         }
+        return;
     }
     /**
      * 获取下一个默认焦点元素
@@ -209,6 +213,7 @@ export default class NavigationService {
             if (el.id === id) flag = true;
             if (flag && el.isDefault) return el;
         }
+        return;
     }
     /**
      * 获取上一个默认焦点元素
@@ -219,7 +224,7 @@ export default class NavigationService {
      */
     getDefaultFocusPreviousById(id: string): FocusElement | undefined {
         const focusElements:Array<FocusElement> = [];
-        this.focusAbleElements.forEach((value, key) => {
+        this.focusAbleElements.forEach((_value, key) => {
             if (key.isDefault) {
                 focusElements.push(key)
             }
